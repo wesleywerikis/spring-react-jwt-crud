@@ -1,0 +1,47 @@
+version: "3.9"
+
+
+services:
+api:
+build:
+context: ./backend
+dockerfile: Dockerfile
+environment:
+- SPRING_PROFILES_ACTIVE=prod
+- JWT_SECRET=${JWT_SECRET:-please-change-me-32chars-minimum________________________________}
+# Descomente para usar MariaDB (e o serviço db abaixo)
+# - SPRING_DATASOURCE_URL=jdbc:mariadb://db:3306/appdb
+# - SPRING_DATASOURCE_USERNAME=app
+# - SPRING_DATASOURCE_PASSWORD=yourStrongPwd
+ports:
+- "8080:8080"
+depends_on: []
+# depends_on:
+# - db
+
+
+web:
+build:
+context: ./frontend
+dockerfile: Dockerfile
+ports:
+- "8081:80"
+depends_on:
+- api
+
+
+# db:
+# image: mariadb:11
+# environment:
+# - MARIADB_DATABASE=appdb
+# - MARIADB_USER=app
+# - MARIADB_PASSWORD=yourStrongPwd
+# - MARIADB_ROOT_PASSWORD=changeRootPwd
+# ports:
+# - "3306:3306"
+# volumes:
+# - dbdata:/var/lib/mysql
+
+
+# volumes:
+# dbdata:
