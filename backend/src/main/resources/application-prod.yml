@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/appdb
+    username: app
+    password: yourStrongPwd
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:please-change-me-32chars-minimum________________________________}
+    expiration: 86400000
