@@ -28,7 +28,8 @@ public class UserService implements UserDetailsService {
         return repo.save(u);
     }
 
-    public UserDetails loadUserByUsarname(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var u = repo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Not found"));
         return org.springframework.security.core.userdetails.User.withUsername(u.getUsername())
                 .password(u.getPassword())
