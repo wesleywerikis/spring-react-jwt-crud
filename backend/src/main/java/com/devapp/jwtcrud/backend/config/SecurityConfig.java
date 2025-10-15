@@ -21,35 +21,28 @@ import com.devapp.jwtcrud.backend.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final UserDetailsService uds;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter, UserDetailsService uds) {
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-        this.uds = uds;
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    DaoAuthenticationProvider authProvider() {
+    DaoAuthenticationProvider authProvider(UserDetailsService uds, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider p = new DaoAuthenticationProvider();
         p.setUserDetailsService(uds);
-        p.setPasswordEncoder(passwordEncoder());
+        p.setPasswordEncoder(passwordEncoder);
         return p;
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider authProvider) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/h2/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(h -> h.frameOptions(f -> f.disable()));
-        http.authenticationProvider(authProvider());
+        http.authenticationProvider(authProvider);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
